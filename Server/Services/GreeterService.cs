@@ -1,7 +1,7 @@
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using Dapr.AppCallback.Autogen.Grpc.v1;
 using Dapr.Client.Autogen.Grpc.v1;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using System.Text.Json;
 
 namespace GrpcGreeter.Services;
@@ -50,6 +50,7 @@ public class GreeterService : AppCallback.AppCallbackBase
 
     public override Task<TopicEventResponse> OnTopicEvent(TopicEventRequest request, ServerCallContext context)
     {
+        _logger.LogDebug($"Received {request.Topic} on {request.PubsubName}: {request.Data.ToStringUtf8()}");
         if (request.PubsubName == _broker)
         {
             var input = JsonSerializer.Deserialize<HelloInternal>(request.Data.ToStringUtf8(), this.jsonOptions);

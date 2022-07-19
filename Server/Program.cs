@@ -2,7 +2,6 @@ using GrpcGreeter.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseKestrel();
 builder.Services.AddGrpc();
 var app = builder.Build();
 

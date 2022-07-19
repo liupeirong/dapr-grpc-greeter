@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/GrpcGreeter.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/GrpcGreeter.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/GrpcGreeter.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "daprd-debug",
+            "appId": "greeter-service",
+            "appPort": 5070,
+            "appProtocol": "grpc",
+            "type": "daprd",
+            "dependsOn": "build"
+        },
+        {
+            "label": "daprd-down",
+            "appId": "greeter-service",
+            "type": "daprd-down"
+        }
+    ]
+}
