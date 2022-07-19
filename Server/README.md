@@ -1,10 +1,10 @@
 # A simple dotnet 6 Dapr grpc Server
 
-This example creates a Dapr grpc service, mimicing the [Greeter dotnet Grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). The grpc service can be:
+This example creates a Dapr grpc service, mimicing the [Greeter dotnet grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). The grpc service can be:
 * invoked by a client for each method it supports. 
 * registered as an event handler for pubsub topics.
 
-## How is it different from a regular Grpc server?
+## How is it different from a regular grpc server?
 Since Dapr injects a side-car to communicate with your grpc server and client, your server must be built in a certain way for Dapr to interact with.
 
 1. The grpc service must inherit from `AppCallback.AppCallbackBase` and [override its virtual methods as needed](https://github.com/dapr/dotnet-sdk/tree/0c9d6a45c8d3792a92d7141056c390bea098d02b/examples/AspNetCore/GrpcServiceSample).
@@ -49,4 +49,4 @@ dotnet build
 dapr run --app-id greeter-service --app-port <must-match-Kestrel-port> --app-protocol grpc -- dotnet run
 ```
 
-* To debug, make sure the task `daprd-debug` in [tasks.json](.vscode\tasks.json) has the correct `appPort`, then hit F5 to debug.
+* To debug in vscode, make sure the task `daprd-debug` in [tasks.json](.vscode\tasks.json) has the correct `appPort`. Choose `Dapr .NET Core Launch (web)` proifle and hit F5 to debug.
