@@ -8,7 +8,7 @@ This example creates a Dapr grpc service, mimicing the [Greeter dotnet grpc tuto
 Since Dapr injects a side-car to communicate with your grpc server and client, your server must be built in a certain way for Dapr to interact with.
 
 1. The grpc service must inherit from `AppCallback.AppCallbackBase` and [override its virtual methods as needed](https://github.com/dapr/dotnet-sdk/tree/0c9d6a45c8d3792a92d7141056c390bea098d02b/examples/AspNetCore/GrpcServiceSample).
-2. You don't need to specify grpc service apis in proto. In fact, Grpc server code generation must be disabled by setting `GrpcServices="None"` in `.csproj`. Without the generated code, you must do serialization and deserialization yourself.
+2. You don't need to specify grpc service apis in `.proto`. In fact, Grpc server code generation must be disabled by setting `GrpcServices="None"` in `.csproj`. Without the generated code, you must do serialization and deserialization yourself.
 3. Dapr adds metadata to the grpc request using `InvokeRequest` defined in `Dapr.Client.Autogen.Grpc.v1`, whereas a regular grpc request is defined in your proto, such as `HelloRequest` in the [Greeter example](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio). If you have a regular grpc service, its methods must be retrofitted for a Dapr grpc client to call. Vice versa, if you have a Dapr grpc service, a regular grpc client will have trouble calling it as-is.
 
 ## What are the gotchas?
@@ -49,4 +49,4 @@ dotnet build
 dapr run --app-id greeter-service --app-port <must-match-Kestrel-port> --app-protocol grpc -- dotnet run
 ```
 
-* To debug in vscode, make sure the task `daprd-debug` in [tasks.json](.vscode\tasks.json) has the correct `appPort`. Choose `Dapr .NET Core Launch (web)` proifle and hit F5 to debug.
+* To debug in vscode, make sure the task `daprd-debug` in [tasks.json](.vscode/tasks.json) has the correct `appPort`. Choose `Dapr .NET Core Launch (web)` profile and hit F5 to debug.

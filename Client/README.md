@@ -1,6 +1,6 @@
 # A simple dotnet 6 Dapr grpc and pubsub client
 
-This example creates a Dapr grpc client to invoke methods in [the Dapr grpc server](../Server), mimicing the [Greeter dotnet grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). It also creates a Dapr pubsub client to test the same server that's also registered to handle Dapr pubsub messages.
+This example creates a Dapr grpc client to invoke methods in [the Dapr grpc server](../Server), mimicing the [Greeter dotnet grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). It also creates a Dapr pubsub client to test the same server that's also registered to subscribe to Dapr pubsub messages.
 
 ## How is it different from a regular grpc client?
 
