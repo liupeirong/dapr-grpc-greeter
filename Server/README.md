@@ -1,4 +1,4 @@
-# A simple dotnet 6 Dapr grpc Server
+# A simple dotnet 6 Dapr grpc server
 
 This example creates a Dapr grpc service, mimicing the [Greeter dotnet grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). The grpc service can be:
 * invoked by a client for each method it supports. 
