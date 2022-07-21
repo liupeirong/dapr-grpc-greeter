@@ -4,8 +4,9 @@ This example creates a Dapr grpc client to invoke methods in [the Dapr grpc serv
 
 ## How is it different from a regular grpc client?
 
-1. The Dapr client does not use the generated grpc client code from `.proto`. In fact, grpc client code generation must be disabled by setting `GrpcServices="None"` in `.csproj`.
-2. Dapr client adds metadata to your request object, ex. `HelloRequest`, to build an `InvokeRequest` defined in `Dapr.Client.Autogen.Grpc.v1` to send to the server.
+With the recent support of `proxy.grpc` in Dapr, you no longer need to invoke grpc service using a Dapr client. You only need to make the following modifications to the client:
+  * Use environment variable `DAPR_GRPC_PORT` when running with `dapr run` so that the client connects to the Dapr sidecar instead of directly to the grpc service. When running without dapr, the same client can connect to the native grpc service.
+  * Add `Metadata { { "dapr-app-id", "greeter-service" } };` when making the grpc call so that the dapr proxy knows to route it to the native grpc service.
 
 ## What are the gotchas? 
 * `dapr invoke` cli can be used to invoke http methods, but it doesn't seem to work to invoke grpc method at the time of this writing. 
@@ -31,14 +32,14 @@ This example creates a Dapr grpc client to invoke methods in [the Dapr grpc serv
 
 ## How to run and debug the client?
 * Ensure the grpc server this client talks to is already listening on its specified `--app-port`.
-* Note down the Dapr app id of ther grpc server and make sure it matches the `server` variable in [Program.cs](./Program.cs).
+* Note down the Dapr app id of the grpc server and make sure it matches the `dapr-app-id` metadata added in [Program.cs](./Program.cs).
 * Make sure the pubsub broker and topic that the server subscribes to matches the `broker` and `topic` variables in [Program.cs](./Program.cs) this client publishes to. 
 * Run the following command:
 
 ```bash
-dotnet restore
-dotnet build
-# to invoke grpc method
+# to invoke grpc method natively
+dot net run 1
+# to invoke grpc method with dapr
 dapr run --app-id greeter-client -- dotnet run 1 
 # to publish an event to message bus
 dapr run --app-id greeter-client -- dotnet run 2 
