@@ -22,8 +22,8 @@ spec:
       enabled: true
 ```
 
-__To support pubsub message handling__ though, it's not yet possible to directly register your existing grpc apis as message handlers. You need to do the following:
-* Add another grpc service that inherits from `AppCallback.AppCallbackBase` and override its virtual methods `ListTopicSubscriptions` and `OnTopicEvent` as shown in [GreeterSubscriptionService](./Services/GreeterSubscriptionService.cs).
+__To support pubsub message handling__ though, it's not yet possible to directly register existing grpc apis as message handlers. You need to do the following:
+* Add another grpc service that inherits from `AppCallback.AppCallbackBase` and overrides its virtual methods `ListTopicSubscriptions` and `OnTopicEvent` as shown in [GreeterSubscriptionService](./Services/GreeterSubscriptionService.cs).
 * You need to deserialize the message yourself. To reuse the existing grpc method as the message handler as much as possible, you might want to deserialize the message to the same protobuf request the grpc method takes. To avoid SeDer incomptibility between grpc and dapr, on the client side, you might want to serialize the protobuf to a json string to put on the message bus. For example:
 
 ```c#
@@ -37,7 +37,7 @@ await client.PublishEventAsync(broker, topic, data, cancellationToken);
 ```
 
 ```c#
-// On the server side, deserialize the json to protobuf
+// On the server side, deserialize the json message to protobuf
 using Google.Protobuf;
 
 // inside OnTopicEvent
