@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--Protobuf Include="Protos\greet.proto" GrpcServices="Server" /-->
-    <Protobuf Include="Protos\greet.proto" GrpcServices="None" />
+    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

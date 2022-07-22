@@ -1,15 +1,49 @@
 # A simple dotnet 6 Dapr grpc server
 
 This example creates a Dapr grpc service, mimicing the [Greeter dotnet grpc tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio), using [dotnet core 6 minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0). The grpc service can be:
-* invoked by a client for each method it supports. 
+* invoked by a regular grpc client or a Dapr client. 
 * registered as an event handler for pubsub topics.
 
 ## How is it different from a regular grpc server?
-Since Dapr injects a side-car to communicate with your grpc server and client, your server must be built in a certain way for Dapr to interact with.
+With `proxy.grpc` support in Dapr, existing grpc service code no longer needs to be changed for a Dapr client to call. The only required change is to add `proxy.grpc` in `.dapr/config.yaml` as shown in the following sample:
 
-1. The grpc service must inherit from `AppCallback.AppCallbackBase` and [override its virtual methods as needed](https://github.com/dapr/dotnet-sdk/tree/0c9d6a45c8d3792a92d7141056c390bea098d02b/examples/AspNetCore/GrpcServiceSample).
-2. You don't need to specify grpc service apis in `.proto`. In fact, Grpc server code generation must be disabled by setting `GrpcServices="None"` in `.csproj`. Without the generated code, you must do serialization and deserialization yourself.
-3. Dapr adds metadata to the grpc request using `InvokeRequest` defined in `Dapr.Client.Autogen.Grpc.v1`, whereas a regular grpc request is defined in your proto, such as `HelloRequest` in the [Greeter example](https://docs.microsoft.com/en-us/aspnet/core/tutorials/grpc/grpc-start?view=aspnetcore-6.0&tabs=visual-studio). If you have a regular grpc service, its methods must be retrofitted for a Dapr grpc client to call. Vice versa, if you have a Dapr grpc service, a regular grpc client will have trouble calling it as-is.
+```yaml
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: daprConfig
+spec:
+  tracing:
+    samplingRate: "1"
+    zipkin:
+      endpointAddress: http://localhost:9411/api/v2/spans
+  features:
+    - name: proxy.grpc
+      enabled: true
+```
+
+__To support pubsub message handling__ though, it's not yet possible to directly register existing grpc apis as message handlers. You need to do the following:
+* Add another grpc service that inherits from `AppCallback.AppCallbackBase` and overrides its virtual methods `ListTopicSubscriptions` and `OnTopicEvent` as shown in [GreeterSubscriptionService](./Services/GreeterSubscriptionService.cs).
+* You need to deserialize the message yourself. To reuse the existing grpc method as the message handler as much as possible, you might want to deserialize the message to the same protobuf request the grpc method takes. To avoid SeDer incomptibility between grpc and dapr, on the client side, you might want to serialize the protobuf to a json string to put on the message bus. For example:
+
+```c#
+// On the client side, serialize a protobuf to json before putting on the message bus
+using Google.Protobuf;
+
+var request = new HelloRequest();
+...
+var data = JsonFormatter.Default.Format(helloRequest);
+await client.PublishEventAsync(broker, topic, data, cancellationToken);
+```
+
+```c#
+// On the server side, deserialize the json message to protobuf
+using Google.Protobuf;
+
+// inside OnTopicEvent
+var data = JsonConvert.DeserializeObject<string>(request.Data.ToStringUtf8());
+var request = JsonParser.Default.Parse<HelloRequest>(data);
+```
 
 ## What are the gotchas?
 * To start the server, you must specify two additional parameters `--app-protocol grpc` and `--app-port`. Without them, the server will run, but Dapr doesn't know to communicate with yuor app on that port with grpc. When the client makes a call, nothing will happen.
@@ -37,7 +71,7 @@ Since Dapr injects a side-car to communicate with your grpc server and client, y
 ``` 
 
 ## How to run and debug the service?
-* Install Dapr in your environment.
+* Install Dapr in your environment. Update `.dapr/config.yaml` to enable `proxy.grpc` as mentioned above.
 * Check `appsettings.{environment}.json` to note
   * the Kestrel server port that grpc will be listening on
   * the Dapr pubsub broker
@@ -45,8 +79,6 @@ Since Dapr injects a side-car to communicate with your grpc server and client, y
 * Run the following command:
 
 ```bash
-dotnet restore
-dotnet build
 dapr run --app-id greeter-service --app-port <must-match-Kestrel-port> --app-protocol grpc -- dotnet run
 ```
 
