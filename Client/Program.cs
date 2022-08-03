@@ -1,5 +1,4 @@
 ﻿using Dapr.Client;
-using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcGreeter;
@@ -23,7 +22,8 @@ if (args.Length > 0 && int.TryParse(args[0], out var index))
 
         // tell dapr the target service; no effect if not running with dapr. 
         var metadata = new Metadata { { "dapr-app-id", "greeter-service" } };
-        var response = client.SayHello(request, metadata);
+        var caller = new GrpcCaller(client);
+        var response = await caller.CallServer(request, metadata);
         Console.WriteLine($"Greeting: {response.Message}");
     }
     else{
@@ -32,8 +32,8 @@ if (args.Length > 0 && int.TryParse(args[0], out var index))
         Console.WriteLine($"Publish to topic {topic} on broker {broker} with {name}");
         var client = new DaprClientBuilder().Build();
         //serialize proto to json explicitly as Dapr default serialization may cause it difficult to deserialize complex protobuf on the server.
-        var data = JsonFormatter.Default.Format(request);
-        await client.PublishEventAsync(broker, topic, data);
+        var caller = new DaprCaller(client);
+        await caller.Publish(broker, topic, request);
         Console.WriteLine("Publish done.");
     }
 }
