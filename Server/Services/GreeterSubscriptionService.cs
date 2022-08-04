@@ -12,17 +12,14 @@ public class GreeterSubscriptionService : AppCallback.AppCallbackBase
     private readonly ILogger<GreeterService> _logger;
     private readonly String _broker;
     private readonly String _topic;
-    public GreeterSubscriptionService(ILogger<GreeterService> logger, IConfiguration configuration)
+    private readonly GreeterService _greeterService;
+
+    public GreeterSubscriptionService(ILogger<GreeterService> logger, IConfiguration configuration, GreeterService greeterService)
     {
         _logger = logger;
         _broker = configuration.GetValue<string>("Subscription:Broker");
         _topic = configuration.GetValue<string>("Subscription:Topic");
-    }
-
-    public Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
-    {
-        _logger.LogDebug($"Subscription SayHello!!! - Received {request.Name}");
-        return Task.FromResult(new HelloReply() { Message = $"Hello {request.Name}!" });
+        _greeterService = greeterService;
     }
 
     readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -49,7 +46,7 @@ public class GreeterSubscriptionService : AppCallback.AppCallbackBase
             {
                 if (request.Topic == _topic)
                 {
-                    SayHello(input, context);
+                    _greeterService.SayHello(input, context);
                 }
             }
         }

@@ -3,6 +3,7 @@ using GrpcGreeter.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
+builder.Services.AddSingleton<GreeterService>();
 var app = builder.Build();
 
 app.MapGrpcService<GreeterService>();

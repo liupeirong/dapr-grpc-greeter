@@ -45,6 +45,9 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
+            "launchBrowser": {
+                "enabled": false
+            },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
